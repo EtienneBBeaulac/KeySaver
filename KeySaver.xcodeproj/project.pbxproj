@@ -13,6 +13,9 @@
 		52EB6CB922CC6F9B0009563F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52EB6CB722CC6F9B0009563F /* Main.storyboard */; };
 		52EB6CC522CC6F9B0009563F /* KeySaverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EB6CC422CC6F9B0009563F /* KeySaverTests.swift */; };
 		52EB6CD022CC6F9B0009563F /* KeySaverUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EB6CCF22CC6F9B0009563F /* KeySaverUITests.swift */; };
+		52EB6CDF22CC76CF0009563F /* CallbackFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EB6CDD22CC76CF0009563F /* CallbackFunctions.swift */; };
+		52EB6CE022CC76CF0009563F /* Keylogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EB6CDE22CC76CF0009563F /* Keylogger.swift */; };
+		52EB6CE622CC779A0009563F /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EB6CE522CC779A0009563F /* WindowController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +49,9 @@
 		52EB6CCB22CC6F9B0009563F /* KeySaverUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeySaverUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EB6CCF22CC6F9B0009563F /* KeySaverUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySaverUITests.swift; sourceTree = "<group>"; };
 		52EB6CD122CC6F9B0009563F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		52EB6CDD22CC76CF0009563F /* CallbackFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallbackFunctions.swift; sourceTree = "<group>"; };
+		52EB6CDE22CC76CF0009563F /* Keylogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keylogger.swift; sourceTree = "<group>"; };
+		52EB6CE522CC779A0009563F /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,11 +103,14 @@
 			isa = PBXGroup;
 			children = (
 				52EB6CB122CC6F9A0009563F /* AppDelegate.swift */,
+				52EB6CDD22CC76CF0009563F /* CallbackFunctions.swift */,
+				52EB6CDE22CC76CF0009563F /* Keylogger.swift */,
 				52EB6CB322CC6F9A0009563F /* ViewController.swift */,
 				52EB6CB522CC6F9B0009563F /* Assets.xcassets */,
 				52EB6CB722CC6F9B0009563F /* Main.storyboard */,
 				52EB6CBA22CC6F9B0009563F /* Info.plist */,
 				52EB6CBB22CC6F9B0009563F /* KeySaver.entitlements */,
+				52EB6CE522CC779A0009563F /* WindowController.swift */,
 			);
 			path = KeySaver;
 			sourceTree = "<group>";
@@ -192,6 +201,11 @@
 				TargetAttributes = {
 					52EB6CAD22CC6F9A0009563F = {
 						CreatedOnToolsVersion = 10.2.1;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
 					};
 					52EB6CBF22CC6F9B0009563F = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -254,8 +268,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52EB6CDF22CC76CF0009563F /* CallbackFunctions.swift in Sources */,
+				52EB6CE622CC779A0009563F /* WindowController.swift in Sources */,
 				52EB6CB422CC6F9A0009563F /* ViewController.swift in Sources */,
 				52EB6CB222CC6F9A0009563F /* AppDelegate.swift in Sources */,
+				52EB6CE022CC76CF0009563F /* Keylogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,7 +438,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = KeySaver/KeySaver.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = HC93EPW23D;
@@ -430,6 +446,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = exaudeus.KeySaver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -440,7 +457,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = KeySaver/KeySaver.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = HC93EPW23D;
@@ -449,6 +465,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = exaudeus.KeySaver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -469,6 +486,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = exaudeus.KeySaverTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -490,6 +508,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = exaudeus.KeySaverTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -510,6 +529,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = exaudeus.KeySaverUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -530,6 +550,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = exaudeus.KeySaverUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
