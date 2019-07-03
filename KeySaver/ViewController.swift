@@ -45,7 +45,26 @@ class ViewController: NSViewController {
     
     func loadLogs() {
         print("loadingLogs")
+        let error: Error? = nil
+        var fileContents: String? = nil
+        do {
+            print(Keylogger.keylogs.appendingPathComponent("logs"))
+            fileContents = try String(contentsOf: Keylogger.keylogs.appendingPathComponent("logs") , encoding: .utf8)
+        } catch {
+            print("caught problem")
+        }
+        if fileContents != nil {
+            // Yay!
+            tv.string = fileContents!
+        } else {
+            // Boo!
+            tv.string = ""
+            if let error = error {
+                print("Error loading \(Keylogger.keylogs.absoluteString). Underlying error: \(error)")
+            }
+        }
 //        let data = FileManager.default.contents(atPath: Keylogger.keylogs.absoluteString);
+        
     }
 
 }
