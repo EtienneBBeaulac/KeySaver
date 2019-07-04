@@ -10,7 +10,8 @@ import Cocoa
 
 class ViewController: NSViewController {
     
-    @IBOutlet var tv: NSTextView!
+    @IBOutlet weak var scrollView: NSScrollView!
+    @IBOutlet weak var tv: NSTextView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +28,16 @@ class ViewController: NSViewController {
         // Update the view, if already loaded.
         }
     }
+    
+    func receiveSearch(query: String) {
+//        print("received: \(query)")
+        let text = tv.string
+        print(text.range(of: query) ?? "not there")
+//            let offset = text
+//        let text = (tv.textStorage as NSAttributedString!).string
+//        let offset = text.
+//        int line = myTextView.getLayout().getLineForOffset(offset);
+    }
 
     @objc dynamic func activatedApp(notification: NSNotification)
     {
@@ -37,34 +48,31 @@ class ViewController: NSViewController {
         {
             if name == "KeySaver" {
                 loadLogs()
-                // TODO: Update textview from files
-                // Use some kind of callback to alert ViewController
             }
         }
     }
     
     func loadLogs() {
-        print("loadingLogs")
-        let error: Error? = nil
         var fileContents: String? = nil
         do {
-            print(Keylogger.keylogs.appendingPathComponent("logs"))
-            fileContents = try String(contentsOf: Keylogger.keylogs.appendingPathComponent("logs") , encoding: .utf8)
+            fileContents = try String(contentsOf: Keylogger.keylogs.appendingPathComponent("logs"), encoding: .utf8)
         } catch {
             print("caught problem")
         }
         if fileContents != nil {
-            // Yay!
             tv.string = fileContents!
         } else {
-            // Boo!
             tv.string = ""
-            if let error = error {
-                print("Error loading \(Keylogger.keylogs.absoluteString). Underlying error: \(error)")
-            }
         }
+        scrollToBottom()
 //        let data = FileManager.default.contents(atPath: Keylogger.keylogs.absoluteString);
         
+    }
+    
+    func scrollToBottom() {
+        if let documentView = scrollView.documentView {
+            documentView.scroll(NSPoint(x: 0, y: documentView.bounds.size.height))
+        }
     }
 
 }

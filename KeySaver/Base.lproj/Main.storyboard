@@ -372,7 +372,8 @@ DQ
                         </subviews>
                     </view>
                     <connections>
-                        <outlet property="tv" destination="Gqv-5J-zbc" id="u5D-Vt-pCM"/>
+                        <outlet property="scrollView" destination="U5q-vs-Ys1" id="OxV-L0-yEV"/>
+                        <outlet property="tv" destination="Gqv-5J-zbc" id="DGj-m1-vXd"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

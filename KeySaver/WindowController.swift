@@ -14,6 +14,7 @@ class WindowController: NSWindowController {
     @IBOutlet weak var startBtn: NSToolbarItem!
     @IBOutlet weak var stopBtn: NSToolbarItem!
     @IBOutlet weak var searchField: NSToolbarItem!
+//    let vc = ViewController.init(nibName: "ViewController", bundle: nil)
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -40,7 +41,10 @@ class WindowController: NSWindowController {
     @IBAction func searchEntered(_ sender: NSSearchField) {
         let searchQuery = sender.stringValue
         if searchQuery != "" {
-            print("searched: " + searchQuery)
+            let vc = window!.contentViewController as! ViewController
+            vc.receiveSearch(query: searchQuery)
+//            vc.receiveSearch(query: searchQuery)
+//            print("searched: " + searchQuery)
         }
     }
     

