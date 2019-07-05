@@ -12,7 +12,7 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var scrollView: NSScrollView!
     @IBOutlet weak var tv: NSTextView!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         NSWorkspace.shared.notificationCenter.addObserver(self,
@@ -22,23 +22,20 @@ class ViewController: NSViewController {
         loadLogs()
         // Do any additional setup after loading the view.
     }
-
+    
     override var representedObject: Any? {
         didSet {
-        // Update the view, if already loaded.
+            // Update the view, if already loaded.
         }
     }
     
     func receiveSearch(query: String) {
-//        print("received: \(query)")
-        let text = tv.string
-        print(text.range(of: query) ?? "not there")
-//            let offset = text
-//        let text = (tv.textStorage as NSAttributedString!).string
-//        let offset = text.
-//        int line = myTextView.getLayout().getLineForOffset(offset);
+        let text = tv.string as NSString
+        let range = text.range(of: query)
+        tv.scrollRangeToVisible(range)
+        tv.showFindIndicator(for: range)
     }
-
+    
     @objc dynamic func activatedApp(notification: NSNotification)
     {
         if  let info = notification.userInfo,
@@ -65,15 +62,16 @@ class ViewController: NSViewController {
             tv.string = ""
         }
         scrollToBottom()
-//        let data = FileManager.default.contents(atPath: Keylogger.keylogs.absoluteString);
+        //        let data = FileManager.default.contents(atPath: Keylogger.keylogs.absoluteString);
         
     }
     
     func scrollToBottom() {
         if let documentView = scrollView.documentView {
             documentView.scroll(NSPoint(x: 0, y: documentView.bounds.size.height))
+            
         }
     }
-
+    
 }
 
