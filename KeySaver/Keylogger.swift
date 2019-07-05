@@ -1,9 +1,10 @@
 //
 //  Keylogger.swift
-//  Keylogger
+//  KeySaver
 //
-//  Created by Skrew Everything on 14/01/17.
-//  Copyright © 2017 Skrew Everything. All rights reserved.
+//  Created by Etienne Beaulac on 5/2/19.
+//  Copyright © 2019 Etienne Beaulac. All rights reserved.
+//  Inspired by Skrew Everything's GitHub for keylogger
 //
 
 import Foundation

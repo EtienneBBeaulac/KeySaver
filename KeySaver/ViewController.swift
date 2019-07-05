@@ -12,9 +12,16 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var scrollView: NSScrollView!
     @IBOutlet weak var tv: NSTextView!
+    var textFinder: NSTextFinder!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        textFinder = NSTextFinder()
+        textFinder.client = tv as? NSTextFinderClient
+        textFinder.findBarContainer = scrollView
+        textFinder.incrementalSearchingShouldDimContentView = true
+        textFinder.isIncrementalSearchingEnabled = true
+        tv.usesFindBar = true
         NSWorkspace.shared.notificationCenter.addObserver(self,
                                                           selector: #selector(activatedApp),
                                                           name: NSWorkspace.didActivateApplicationNotification,
@@ -50,6 +57,7 @@ class ViewController: NSViewController {
     }
     
     func loadLogs() {
+        textFinder.noteClientStringWillChange()
         var fileContents: String? = nil
         do {
             fileContents = try String(contentsOf: Keylogger.keylogs.appendingPathComponent("logs"), encoding: .utf8)

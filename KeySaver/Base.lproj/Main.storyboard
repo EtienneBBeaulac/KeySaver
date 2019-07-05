@@ -298,7 +298,7 @@ DQ
                                     <searchField key="view" wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" id="2fb-4c-Q3x">
                                         <rect key="frame" x="0.0" y="14" width="96" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" sendsWholeSearchString="YES" id="cvb-He-66y">
+                                        <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="cvb-He-66y">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
