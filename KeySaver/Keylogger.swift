@@ -82,7 +82,6 @@ class Keylogger
     func CreateDeviceMatchingDictionary(inUsagePage: Int, inUsage: Int ) -> CFMutableDictionary
     {
         /* // note: the usage is only valid if the usage page is also defined */
-        
         let resultAsSwiftDic = [kIOHIDDeviceUsagePageKey: inUsagePage, kIOHIDDeviceUsageKey: inUsage]
         let resultAsCFDic: CFMutableDictionary = resultAsSwiftDic as! CFMutableDictionary
         return resultAsCFDic

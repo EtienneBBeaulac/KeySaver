@@ -78,13 +78,7 @@ class LoggerCallback
         //            test = true
         //            CallbackFunctions.prev = fileName
         //        }
-        if !FileManager.default.fileExists(atPath: Keylogger.filename) {
-            if !FileManager.default.createFile(atPath: Keylogger.filename, contents: nil, attributes: nil) {
-                print("Can't Create File")
-            }
-        }
-        let fh = FileHandle.init(forWritingAtPath: Keylogger.filename)
-        fh?.seekToEndOfFile()
+
         //        if test
         //        {
         //            let timeStamp = "\n" + Date().description(with: Locale.current) + "\n"
