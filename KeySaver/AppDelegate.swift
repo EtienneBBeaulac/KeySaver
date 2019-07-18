@@ -8,11 +8,16 @@
 
 import Cocoa
 
+extension Notification.Name {
+    static let didToggleLogger = Notification.Name("didToggleLogger")
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-
-
-
+    
+    var mWindow: NSWindowController? = nil
+    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String : false]
@@ -42,6 +47,52 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
         }
+        statusItem.button?.title = "KS"
+        statusItem.menu = NSMenu()
+        statusItem.menu?.autoenablesItems = false
+        addMenuItems()
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidToggleLogger(_:)), name: .didToggleLogger, object: nil)
+    }
+    
+    @objc func onDidToggleLogger(_ notification: Notification) {
+        if let data = notification.userInfo as? [String: Bool] {
+            for (_, activated) in data {
+                if activated {
+                    statusItem.menu?.item(at: 0)?.isEnabled = false
+                    statusItem.menu?.item(at: 1)?.isEnabled = true
+                } else {
+                    statusItem.menu?.item(at: 0)?.isEnabled = true
+                    statusItem.menu?.item(at: 1)?.isEnabled = false
+                }
+            }
+        }
+    }
+    
+    func addMenuItems() {
+        let startBtn = NSMenuItem(title: "", action: #selector(startLogger), keyEquivalent: "")
+        startBtn.isEnabled = false
+        startBtn.image = #imageLiteral(resourceName: "start_icon")
+        statusItem.menu?.addItem(startBtn)
+        
+        let stopBtn = NSMenuItem(title: "", action: #selector(stopLogger), keyEquivalent: "")
+        stopBtn.isEnabled = true
+        stopBtn.image = #imageLiteral(resourceName: "stop_icon")
+        statusItem.menu?.addItem(stopBtn)
+    }
+    
+    @objc func startLogger(_ sender: NSMenuItem) {
+        NotificationCenter.default.post(name: .didToggleLogger, object: self, userInfo: ["activated": true])
+    }
+    
+    @objc func stopLogger(_ sender: NSMenuItem) {
+        NotificationCenter.default.post(name: .didToggleLogger, object: self, userInfo: ["activated": false])
+    }
+    
+    func mainWindowCached() -> NSWindowController? {
+        if let window = NSApplication.shared.mainWindow?.windowController {
+            self.mWindow = window
+        }
+        return self.mWindow
     }
     
     func dialogOKCancel(question: String, text: String) -> NSApplication.ModalResponse {
@@ -55,11 +106,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.buttons[2].setButtonType(.onOff)
         return alert.runModal()
     }
-
+    
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+        guard let vc = mainWindowCached()?.window!.contentViewController as? ViewController else {
+            return
+        }
+        vc.forceWrite()
     }
-
-
+    
 }
 
