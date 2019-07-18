@@ -109,10 +109,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
-        guard let vc = mainWindowCached()?.window!.contentViewController as? ViewController else {
-            return
-        }
-        vc.forceWrite()
+//        guard let vc = mainWindowCached()?.window!.contentViewController as? ViewController else {
+//            return
+//        }
+//        vc.forceWrite()
     }
     
 }

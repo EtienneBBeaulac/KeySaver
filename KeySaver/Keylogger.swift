@@ -11,29 +11,37 @@ import Foundation
 import IOKit.hid
 import Cocoa
 
+extension Bundle {
+    public var icon: NSImage? {
+        if let icons = infoDictionary?["CFBundleIcons"] as? [String: Any],
+            let primaryIcon = icons["CFBundlePrimaryIcon"] as? [String: Any],
+            let iconFiles = primaryIcon["CFBundleIconFiles"] as? [String],
+            let lastIcon = iconFiles.last {
+            return NSImage(named: lastIcon)
+        }
+        return nil
+    }
+}
+
 class Keylogger
 {
     var manager: IOHIDManager
-    var keyboards = NSArray()                  // Used in multiple matching dictionary
+    var keyboards = NSArray()
     //    var bundlePathURL = Bundle.main.bundleURL   // Path to where the executable is present - Change this to use custom path
     static var bundlePathURL = URL(fileURLWithPath: "/Users/etiennebeaulac/Downloads", isDirectory: true)
-    static var keylogs = bundlePathURL.appendingPathComponent("Data").appendingPathComponent("Logs")
-//    static var filenameUrl = keylogs.appendingPathComponent("logs")
-//    static var filename = filenameUrl.path
-    var appName = "KeySaver"                    // Active App name, starts with this one
-//    var keylogs: URL                            // Folder
+    static var dataDir = bundlePathURL.appendingPathComponent("Data")
+    static var activeApp = Application(name: "KeySaver", icon: #imageLiteral(resourceName: "start_icon"), data: "")
     
     init()
     {
-//        keylogs = bundlePathURL.appendingPathComponent("Data").appendingPathComponent("Logs")
         manager = IOHIDManagerCreate(kCFAllocatorDefault, IOOptionBits(kIOHIDOptionsTypeNone))
         
-        if !FileManager.default.fileExists(atPath: Keylogger.keylogs.path)
+        if !FileManager.default.fileExists(atPath: Keylogger.dataDir.path)
         {
             do
             {
-                try FileManager.default.createDirectory(at: Keylogger.bundlePathURL.appendingPathComponent("Data"), withIntermediateDirectories: false, attributes: nil)
-                try FileManager.default.createDirectory(at: Keylogger.keylogs, withIntermediateDirectories: false, attributes: nil)
+                try FileManager.default.createDirectory(at: Keylogger.dataDir, withIntermediateDirectories: false, attributes: nil)
+//                try FileManager.default.createDirectory(at: Keylogger.keylogs, withIntermediateDirectories: false, attributes: nil)
             }
             catch
             {
@@ -72,9 +80,13 @@ class Keylogger
     {
         if  let info = notification.userInfo,
             let app = info[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-            let name = app.localizedName
+            let name = app.localizedName,
+            let icon = app.icon
         {
-            self.appName = name
+            if Keylogger.activeApp.name != "KeySaver" && !Keylogger.activeApp.data.isEmpty {
+                LoggerCallback.encrypt(text: Keylogger.activeApp.data, toFile: Keylogger.getDateFile(forApp: Keylogger.activeApp.name))
+            }
+            Keylogger.activeApp = Application(name: name, icon: icon, data: "")
         }
     }
     
@@ -218,10 +230,10 @@ class Keylogger
         return map
     }
     
-    static func getDateFile() -> URL {
+    static func getDateFile(forApp appName: String) -> URL {
         let calendar = Calendar.current
         let dateFile = "\(calendar.component(.day, from: Date()))-\(calendar.component(.month, from: Date()))-\(calendar.component(.year, from: Date()))"
-        return Keylogger.keylogs.appendingPathComponent(dateFile)
+        return Keylogger.dataDir.appendingPathComponent(appName).appendingPathComponent(dateFile)
     }
     
 }
