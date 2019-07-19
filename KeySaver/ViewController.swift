@@ -72,6 +72,7 @@ class ViewController: NSViewController {
         do {
             let contents = try FileManager.default.contentsOfDirectory(atPath: Keylogger.dataDir.path)
             for element in contents {
+                if (element == ".DS_Store") { continue }
                 if let icon = NSImage.init(contentsOf: Keylogger.dataDir.appendingPathComponent(element).appendingPathComponent(LoggerCallback.appIconFileName)) {
                     apps.append(Application(name: element, icon: icon, data: ""))
                 } else {
