@@ -15,6 +15,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var scrollView: NSScrollView!
     @IBOutlet weak var tv: NSTextView!
     var textFinder: NSTextFinder!
+    var lastSelectedAppIndex = 0
     
     var apps: [Application] = []
     
@@ -34,7 +35,6 @@ class ViewController: NSViewController {
                                                           name: NSWorkspace.didActivateApplicationNotification,
                                                           object: nil)
         loadApps()
-        tableView.selectRowIndexes(NSIndexSet(index: 0) as IndexSet, byExtendingSelection: false)
         loadLogs(forApp: apps[tableView.selectedRow].name)
 //        loadLogs(forApp: (tableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? AppCellView)?.appName.stringValue ?? nil)
         // Do any additional setup after loading the view.
@@ -61,26 +61,29 @@ class ViewController: NSViewController {
         {
             if name == "KeySaver" {
                 loadApps()
-                loadLogs(forApp: (tableView.view(atColumn: 0, row: tableView.selectedRow, makeIfNecessary: false) as! AppCellView).appName.stringValue)
+                loadLogs(forApp: apps[lastSelectedAppIndex].name)
             }
         }
     }
     
     func loadApps() {
 //        let keys = [URLResourceKey.isDirectoryKey, URLResourceKey.localizedNameKey]
+        apps = []
         do {
             let contents = try FileManager.default.contentsOfDirectory(atPath: Keylogger.dataDir.path)
             for element in contents {
-                if let icon = NSImage.init(contentsOf: Keylogger.dataDir.appendingPathComponent(element).appendingPathComponent("appIcon.png")) {
+                if let icon = NSImage.init(contentsOf: Keylogger.dataDir.appendingPathComponent(element).appendingPathComponent(LoggerCallback.appIconFileName)) {
                     apps.append(Application(name: element, icon: icon, data: ""))
                 } else {
                     apps.append(Application(name: element, icon: #imageLiteral(resourceName: "start_icon"), data: ""))
                 }
             }
+            apps = apps.sorted(by: {$0.name < $1.name})
         } catch {
             print(error)
         }
         tableView.reloadData()
+        tableView.selectRowIndexes(NSIndexSet(index: lastSelectedAppIndex) as IndexSet, byExtendingSelection: false)
     }
     
     func loadLogs(forApp appName: String?) {
@@ -88,24 +91,27 @@ class ViewController: NSViewController {
         textFinder.noteClientStringWillChange()
         var fileContents: Data? = nil
         do {
-            var completeText = ""
+            var files: [TextFile] = []
             let appPath = Keylogger.dataDir.appendingPathComponent(appName)
             let enumerator: FileManager.DirectoryEnumerator? = FileManager.default.enumerator(atPath: appPath.path)
             while let element = enumerator?.nextObject() as? String {
                 if (element == ".DS_Store") { continue }
                 if (element == LoggerCallback.appIconFileName) { continue }
-                if (completeText != "") { completeText += "\n\n" }
-                
-                completeText += "=========== " + element + " ===========\n"
 
                 fileContents = try RNCryptor.decrypt(data: (NSData.init(contentsOf: appPath.appendingPathComponent(element)) as Data), withPassword: LoggerCallback.PASSWORD)
                 if fileContents != nil {
                     if let data = String(data: fileContents!, encoding: .utf8) {
-                        completeText += data
+                        files.append(TextFile(name: element, contents: data))
                     }
                 }
             }
-            tv.string = completeText
+            files = files.sorted(by: {$0.name > $1.name})
+            tv.string = ""
+            for file in files {
+                if tv.string != "" { tv.string += "\n\n" }
+                tv.string += "=========== " + file.name + " ===========\n"
+                tv.string += file.contents
+            }
             
         } catch {
             print("Problem loading logs:")
@@ -146,6 +152,7 @@ extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
     
     func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
         loadLogs(forApp: apps[row].name)
+        lastSelectedAppIndex = row
         return true
     }
 }

@@ -22,7 +22,7 @@ struct Application {
 //    var data: String
 //}
 //
-//struct TextFile {
-//    let name: String
-//    let contents: String
-//}
+struct TextFile {
+    let name: String
+    let contents: String
+}
